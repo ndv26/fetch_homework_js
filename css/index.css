@@ -1,0 +1,76 @@
+.container {
+    width: 90%;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    margin: 50px 0;
+}
+
+table {
+    width: 100%;
+    text-align: center;
+}
+
+th,
+td {
+    border: 2px solid #ddd;
+    padding: 12px;
+    font-size: 1rem;
+}
+
+.mt-4 {
+    margin-top: 16px;
+}
+
+.btn {
+    border: none;
+    background: transparent;
+    padding: 8px 12px;
+    border-radius: 20px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn-primary {
+    background: rgb(76, 76, 240);
+}
+
+.btn-danger {
+    background: rgb(237, 56, 56);
+}
+
+.modal {
+    display: none;
+    position: absolute;
+    width: 400px;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    text-align: center;
+    padding: 30px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+
+.show {
+    display: block;
+}
+
+.form-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+}
+
+.form-group input {
+    width: 70%;
+    padding: 6px;
+}
