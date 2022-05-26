@@ -1,10 +1,5 @@
 import validate from "./validate.js";
-import {
-    getUsersHandler,
-    addUserHandler,
-    updateUserHandler,
-    deleteUserHandler,
-} from "./request.js";
+import { getUsersHandler, addUserHandler, updateUserHandler, deleteUserHandler } from "./request.js";
 
 const apiUrl = "https://api-d.thesoftwarehouse.tech/api/i-users/";
 
@@ -107,8 +102,7 @@ function editUser(id) {
     modal.classList.add("show");
     document.getElementById("username").value = selectedRow.cells[0].innerHTML;
     document.getElementById("email").value = selectedRow.cells[1].innerHTML;
-    document.getElementById("first-name").value =
-        selectedRow.cells[2].innerHTML;
+    document.getElementById("first-name").value = selectedRow.cells[2].innerHTML;
     document.getElementById("last-name").value = selectedRow.cells[3].innerHTML;
     document.querySelector(".submit-btn").innerHTML = "Save";
     form.onsubmit = function (e) {

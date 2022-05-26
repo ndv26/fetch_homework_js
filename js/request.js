@@ -34,13 +34,10 @@ export function updateUserHandler(apiUrl, id, userData, selectedRow) {
     fetch(apiUrl + id, httpConfig)
         .then((response) => response.json())
         .then((responseData) => {
-            selectedRow.cells[0].innerHTML =
-                responseData.data.attributes.username;
+            selectedRow.cells[0].innerHTML = responseData.data.attributes.username;
             selectedRow.cells[1].innerHTML = responseData.data.attributes.email;
-            selectedRow.cells[2].innerHTML =
-                responseData.data.attributes.firstName;
-            selectedRow.cells[3].innerHTML =
-                responseData.data.attributes.lastName;
+            selectedRow.cells[2].innerHTML = responseData.data.attributes.firstName;
+            selectedRow.cells[3].innerHTML = responseData.data.attributes.lastName;
         });
 }
 
