@@ -1,8 +1,6 @@
 import validate from "./validate.js";
 import { getUsersHandler, addUserHandler, updateUserHandler, deleteUserHandler } from "./request.js";
 
-const apiUrl = "https://api-d.thesoftwarehouse.tech/api/i-users/";
-
 const showModalBtn = document.getElementById("show-modal-btn");
 const modal = document.querySelector(".modal");
 const form = document.querySelector(".form");
@@ -51,7 +49,7 @@ function addNewRow(user) {
     const delBtn = document.createElement("button");
     delBtn.innerHTML = "Delete";
     delBtn.classList.add("btn", "btn-danger");
-    delBtn.addEventListener("click", () => deleteUserHandler(apiUrl, user.id));
+    delBtn.addEventListener("click", () => deleteUserHandler(user.id));
     cell5.append(editBtn, delBtn);
 }
 
@@ -90,7 +88,7 @@ function addUser() {
         ) {
             alert("Invalid inputs! Please try again.");
         } else {
-            addUserHandler(apiUrl, formInputs, addNewRow);
+            addUserHandler(formInputs, addNewRow);
             clearForm();
             modal.classList.remove("show");
         }
@@ -110,7 +108,7 @@ function editUser(id) {
 
         const formInputs = getFormInputs();
 
-        updateUserHandler(apiUrl, id, formInputs, selectedRow);
+        updateUserHandler(id, formInputs, selectedRow);
         clearForm();
         modal.classList.remove("show");
     };

@@ -1,4 +1,6 @@
-export function getUsersHandler(apiUrl, render) {
+const apiUrl = "https://api-d.thesoftwarehouse.tech/api/i-users/";
+
+export function getUsersHandler(render) {
     fetch(apiUrl)
         .then((response) => response.json())
         .then((responseData) => {
@@ -6,7 +8,7 @@ export function getUsersHandler(apiUrl, render) {
         });
 }
 
-export function addUserHandler(apiUrl, userData, render) {
+export function addUserHandler(userData, render) {
     const httpConfig = {
         method: "POST",
         body: JSON.stringify({
@@ -21,7 +23,7 @@ export function addUserHandler(apiUrl, userData, render) {
         });
 }
 
-export function updateUserHandler(apiUrl, id, userData, selectedRow) {
+export function updateUserHandler(id, userData, selectedRow) {
     const httpConfig = {
         method: "PUT",
         body: JSON.stringify({
@@ -41,7 +43,7 @@ export function updateUserHandler(apiUrl, id, userData, selectedRow) {
         });
 }
 
-export function deleteUserHandler(apiUrl, id) {
+export function deleteUserHandler(id) {
     const httpConfig = {
         method: "DELETE",
     };
