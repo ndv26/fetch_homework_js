@@ -55,45 +55,14 @@ function addNewRow(user) {
 }
 
 function addUser() {
-    const submitBtn = document.querySelector(".submit-btn");
-    submitBtn.addEventListener("click", () => {
-        const formInputs = getFormInputs();
-        const usernameConfig = {
-            value: formInputs.username,
-            isRequired: true,
-        };
-        const emailConfig = {
-            value: formInputs.email,
-            isRequired: true,
-        };
-        const firstNameConfig = {
-            value: formInputs.firstName,
-            isRequired: true,
-        };
-        const lastNameConfig = {
-            value: formInputs.lastName,
-            isRequired: true,
-        };
-        const passwordConfig = {
-            value: formInputs.password,
-            isRequired: true,
-            minLength: 8,
-        };
+    const formInputs = getFormInputs();
+    console.log(formInputs);
 
-        if (
-            !validate(usernameConfig) ||
-            !validate(emailConfig) ||
-            !validate(firstNameConfig) ||
-            !validate(lastNameConfig) ||
-            !validate(passwordConfig)
-        ) {
-            alert("Invalid inputs! Please try again.");
-        } else {
-            addUserHandler(formInputs, addNewRow);
-            clearForm();
-            modal.classList.remove("show");
-        }
-    });
+    if (formInputs) {
+        addUserHandler(formInputs, addNewRow);
+        clearForm();
+        modal.classList.remove("show");
+    }
 }
 
 function editUser(id) {
@@ -108,10 +77,11 @@ function editUser(id) {
         e.preventDefault();
 
         const formInputs = getFormInputs();
-
-        updateUserHandler(id, formInputs, selectedRow);
-        clearForm();
-        modal.classList.remove("show");
+        if (formInputs) {
+            updateUserHandler(id, formInputs, selectedRow);
+            clearForm();
+            modal.classList.remove("show");
+        }
     };
 }
 
@@ -121,13 +91,48 @@ function getFormInputs() {
     const firstName = document.getElementById("first-name").value;
     const lastName = document.getElementById("last-name").value;
     const password = document.getElementById("password").value;
-    return {
-        username,
-        email,
-        firstName,
-        lastName,
-        password,
+
+    const usernameConfig = {
+        value: username,
+        isRequired: true,
     };
+    const emailConfig = {
+        value: email,
+        isRequired: true,
+        isEmail: true,
+    };
+    const firstNameConfig = {
+        value: firstName,
+        isRequired: true,
+    };
+    const lastNameConfig = {
+        value: lastName,
+        isRequired: true,
+    };
+    const passwordConfig = {
+        value: password,
+        isRequired: true,
+        minLength: 8,
+    };
+
+    if (
+        !validate(usernameConfig) ||
+        !validate(emailConfig) ||
+        !validate(firstNameConfig) ||
+        !validate(lastNameConfig) ||
+        !validate(passwordConfig)
+    ) {
+        alert("Invalid inputs! Please try again.");
+        return;
+    } else {
+        return {
+            username,
+            email,
+            firstName,
+            lastName,
+            password,
+        };
+    }
 }
 
 function clearForm() {
