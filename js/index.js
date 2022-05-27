@@ -8,7 +8,7 @@ const form = document.querySelector(".form");
 app();
 
 function app() {
-    getUsersHandler(apiUrl, render);
+    getUsersHandler(render);
     showModalBtn.addEventListener("click", function () {
         modal.classList.add("show");
         form.onsubmit = function (e) {
@@ -20,6 +20,7 @@ function app() {
     const closeModalBtn = document.getElementById("close-modal-btn");
     closeModalBtn.addEventListener("click", function () {
         modal.classList.remove("show");
+        clearForm();
     });
 }
 
