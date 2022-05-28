@@ -1,7 +1,7 @@
 import validate from "./validate.js";
 import { getUsersHandler, addUserHandler, updateUserHandler, deleteUserHandler } from "./request.js";
 
-const showModalBtn = document.getElementById("show-modal-btn");
+const table = document.getElementById("table");
 const modal = document.querySelector(".modal");
 const form = document.querySelector(".form");
 
@@ -9,16 +9,32 @@ app();
 
 function app() {
     getUsersHandler(render);
-    showModalBtn.addEventListener("click", function () {
-        modal.classList.add("show");
-        form.onsubmit = function (e) {
-            e.preventDefault();
-            addUser();
-        };
+    table.addEventListener("click", (e) => {
+        if (e.target.tagName === "BUTTON") {
+            if (e.target.dataset.action === "add") {
+                modal.classList.add("show");
+                form.onsubmit = (e) => {
+                    e.preventDefault();
+                    addUser();
+                };
+            }
+
+            if (e.target.dataset.action === "edit" && e.target.dataset.id) {
+                const id = e.target.dataset.id;
+                editUser(id);
+            }
+
+            if (e.target.dataset.action === "delete" && e.target.dataset.id) {
+                const id = e.target.dataset.id;
+                deleteUserHandler(id);
+            }
+        } else {
+            return;
+        }
     });
 
     const closeModalBtn = document.getElementById("close-modal-btn");
-    closeModalBtn.addEventListener("click", function () {
+    closeModalBtn.addEventListener("click", () => {
         modal.classList.remove("show");
         clearForm();
     });
@@ -43,20 +59,12 @@ function addNewRow(user) {
     const cell4 = newRow.insertCell(3);
     cell4.innerHTML = user.attributes.lastName;
     const cell5 = newRow.insertCell(4);
-    const editBtn = document.createElement("button");
-    editBtn.innerHTML = "Edit";
-    editBtn.classList.add("btn", "btn-primary");
-    editBtn.addEventListener("click", () => editUser(user.id));
-    const delBtn = document.createElement("button");
-    delBtn.innerHTML = "Delete";
-    delBtn.classList.add("btn", "btn-danger");
-    delBtn.addEventListener("click", () => deleteUserHandler(user.id));
-    cell5.append(editBtn, delBtn);
+    cell5.innerHTML = `<button data-action='edit' data-id=${user.id} class='btn btn-primary'>Edit</button>
+    <button data-action='delete' data-id=${user.id} class='btn btn-danger'>Delete</button>`;
 }
 
 function addUser() {
     const formInputs = getFormInputs();
-    console.log(formInputs);
 
     if (formInputs) {
         addUserHandler(formInputs, addNewRow);

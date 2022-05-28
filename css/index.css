@@ -20,6 +20,11 @@ td {
     font-size: 1rem;
 }
 
+.td-action {
+    border: none;
+    text-align: left;
+}
+
 .mt-4 {
     margin-top: 16px;
 }
