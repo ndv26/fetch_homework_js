@@ -1,5 +1,7 @@
 import validate from "./validate.js";
-import { getUsersHandler, addUserHandler, updateUserHandler, deleteUserHandler } from "./request.js";
+import { sendRequest } from "./request.js";
+
+const apiUrl = "https://api-d.thesoftwarehouse.tech/api/i-users/";
 
 const table = document.getElementById("table");
 const modal = document.querySelector(".modal");
@@ -8,28 +10,24 @@ const form = document.querySelector(".form");
 app();
 
 function app() {
-    getUsersHandler(render);
+    getUsersHandler();
     table.addEventListener("click", (e) => {
-        if (e.target.tagName === "BUTTON") {
-            if (e.target.dataset.action === "add") {
-                modal.classList.add("show");
-                form.onsubmit = (e) => {
-                    e.preventDefault();
-                    addUser();
-                };
-            }
+        if (e.target.dataset.action === "add") {
+            modal.classList.add("show");
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                addUserHandler();
+            };
+        }
 
-            if (e.target.dataset.action === "edit" && e.target.dataset.id) {
-                const id = e.target.dataset.id;
-                editUser(id);
-            }
+        if (e.target.dataset.action === "edit" && e.target.dataset.id) {
+            const id = e.target.dataset.id;
+            editUserHandler(id);
+        }
 
-            if (e.target.dataset.action === "delete" && e.target.dataset.id) {
-                const id = e.target.dataset.id;
-                deleteUserHandler(id);
-            }
-        } else {
-            return;
+        if (e.target.dataset.action === "delete" && e.target.dataset.id) {
+            const id = e.target.dataset.id;
+            deleteUserHandler(id);
         }
     });
 
@@ -40,7 +38,71 @@ function app() {
     });
 }
 
-function render(users) {
+async function getUsersHandler() {
+    try {
+        const data = await sendRequest(apiUrl);
+        renderUsers(data);
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+async function addUserHandler() {
+    const formInputs = getFormInputs();
+
+    if (formInputs) {
+        try {
+            const data = await sendRequest(apiUrl, {
+                method: "POST",
+                body: formInputs,
+            });
+            addNewRow(data);
+            clearForm();
+            modal.classList.remove("show");
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+}
+
+function editUserHandler(id) {
+    const selectedRow = document.querySelector(".user-" + id);
+    modal.classList.add("show");
+    document.querySelector(".submit-btn").innerHTML = "Save";
+    document.getElementById("username").value = selectedRow.cells[0].innerHTML;
+    document.getElementById("email").value = selectedRow.cells[1].innerHTML;
+    document.getElementById("first-name").value = selectedRow.cells[2].innerHTML;
+    document.getElementById("last-name").value = selectedRow.cells[3].innerHTML;
+
+    form.onsubmit = async function (e) {
+        e.preventDefault();
+        const formInputs = getFormInputs();
+        if (formInputs) {
+            try {
+                const data = await sendRequest(apiUrl + id, {
+                    method: "PUT",
+                    body: formInputs,
+                });
+                editUser(data, selectedRow);
+                clearForm();
+                modal.classList.remove("show");
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+    };
+}
+
+async function deleteUserHandler(id) {
+    try {
+        const data = await fetch(apiUrl + id, { method: "DELETE" });
+        deleteUser(id);
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+function renderUsers(users) {
     users.forEach((user) => {
         addNewRow(user);
     });
@@ -63,34 +125,16 @@ function addNewRow(user) {
     <button data-action='delete' data-id=${user.id} class='btn btn-danger'>Delete</button>`;
 }
 
-function addUser() {
-    const formInputs = getFormInputs();
-
-    if (formInputs) {
-        addUserHandler(formInputs, addNewRow);
-        clearForm();
-        modal.classList.remove("show");
-    }
+function editUser(data, selectedRow) {
+    selectedRow.cells[0].innerHTML = data.attributes.username;
+    selectedRow.cells[1].innerHTML = data.attributes.email;
+    selectedRow.cells[2].innerHTML = data.attributes.firstName;
+    selectedRow.cells[3].innerHTML = data.attributes.lastName;
 }
 
-function editUser(id) {
-    const selectedRow = document.querySelector(".user-" + id);
-    modal.classList.add("show");
-    document.getElementById("username").value = selectedRow.cells[0].innerHTML;
-    document.getElementById("email").value = selectedRow.cells[1].innerHTML;
-    document.getElementById("first-name").value = selectedRow.cells[2].innerHTML;
-    document.getElementById("last-name").value = selectedRow.cells[3].innerHTML;
-    document.querySelector(".submit-btn").innerHTML = "Save";
-    form.onsubmit = function (e) {
-        e.preventDefault();
-
-        const formInputs = getFormInputs();
-        if (formInputs) {
-            updateUserHandler(id, formInputs, selectedRow);
-            clearForm();
-            modal.classList.remove("show");
-        }
-    };
+function deleteUser(id) {
+    const delRow = document.querySelector(".user-" + id);
+    delRow.remove();
 }
 
 function getFormInputs() {
