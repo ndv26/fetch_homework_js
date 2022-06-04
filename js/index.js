@@ -1,5 +1,6 @@
 import validate from "./validate.js";
 import { sendRequest } from "./request.js";
+import { getInputElements } from "./utils.js";
 
 const apiUrl = "https://api-d.thesoftwarehouse.tech/api/i-users/";
 
@@ -20,14 +21,17 @@ function app() {
             };
         }
 
-        if (e.target.dataset.action === "edit" && e.target.dataset.id) {
-            const id = e.target.dataset.id;
-            editUserHandler(id);
+        if (e.target.dataset.action === "edit") {
+            const userData = JSON.parse(e.target.dataset.user);
+            editUserHandler(userData);
         }
 
         if (e.target.dataset.action === "delete" && e.target.dataset.id) {
             const id = e.target.dataset.id;
-            deleteUserHandler(id);
+            const deleteConfirmation = confirm("Are you sure you want to delete?");
+            if (deleteConfirmation) {
+                deleteUserHandler(id);
+            }
         }
     });
 
@@ -65,25 +69,24 @@ async function addUserHandler() {
     }
 }
 
-function editUserHandler(id) {
-    const selectedRow = document.querySelector(".user-" + id);
+function editUserHandler(userData) {
     modal.classList.add("show");
     document.querySelector(".submit-btn").innerHTML = "Save";
-    document.getElementById("username").value = selectedRow.cells[0].innerHTML;
-    document.getElementById("email").value = selectedRow.cells[1].innerHTML;
-    document.getElementById("first-name").value = selectedRow.cells[2].innerHTML;
-    document.getElementById("last-name").value = selectedRow.cells[3].innerHTML;
+    const inputElements = getInputElements();
+    inputElements.forEach((input) => {
+        input.value = userData.attributes[input.id] || "";
+    });
 
     form.onsubmit = async function (e) {
         e.preventDefault();
         const formInputs = getFormInputs();
         if (formInputs) {
             try {
-                const data = await sendRequest(apiUrl + id, {
+                const data = await sendRequest(apiUrl + userData.id, {
                     method: "PUT",
                     body: formInputs,
                 });
-                editUser(data, selectedRow);
+                editUser(data);
                 clearForm();
                 modal.classList.remove("show");
             } catch (error) {
@@ -95,7 +98,7 @@ function editUserHandler(id) {
 
 async function deleteUserHandler(id) {
     try {
-        const data = await fetch(apiUrl + id, { method: "DELETE" });
+        await fetch(apiUrl + id, { method: "DELETE" });
         deleteUser(id);
     } catch (error) {
         alert(error.message);
@@ -121,11 +124,14 @@ function addNewRow(user) {
     const cell4 = newRow.insertCell(3);
     cell4.innerHTML = user.attributes.lastName;
     const cell5 = newRow.insertCell(4);
-    cell5.innerHTML = `<button data-action='edit' data-id=${user.id} class='btn btn-primary'>Edit</button>
+    cell5.innerHTML = `<button data-action='edit' data-user=${JSON.stringify(
+        user
+    )} class='btn btn-primary'>Edit</button>
     <button data-action='delete' data-id=${user.id} class='btn btn-danger'>Delete</button>`;
 }
 
-function editUser(data, selectedRow) {
+function editUser(data) {
+    const selectedRow = document.querySelector(".user-" + data.id);
     selectedRow.cells[0].innerHTML = data.attributes.username;
     selectedRow.cells[1].innerHTML = data.attributes.email;
     selectedRow.cells[2].innerHTML = data.attributes.firstName;
@@ -138,11 +144,8 @@ function deleteUser(id) {
 }
 
 function getFormInputs() {
-    const username = document.getElementById("username").value;
-    const email = document.getElementById("email").value;
-    const firstName = document.getElementById("first-name").value;
-    const lastName = document.getElementById("last-name").value;
-    const password = document.getElementById("password").value;
+    const inputElements = getInputElements();
+    const [username, email, firstName, lastName, password] = inputElements.map((input) => input.value);
 
     const usernameConfig = {
         value: username,
@@ -188,9 +191,6 @@ function getFormInputs() {
 }
 
 function clearForm() {
-    document.getElementById("username").value = "";
-    document.getElementById("email").value = "";
-    document.getElementById("first-name").value = "";
-    document.getElementById("last-name").value = "";
-    document.getElementById("password").value = "";
+    const inputElements = getInputElements();
+    inputElements.forEach((input) => (input.value = ""));
 }
